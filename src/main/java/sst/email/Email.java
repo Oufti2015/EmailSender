@@ -1,5 +1,6 @@
 package sst.email;
 
+import lombok.Getter;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
 import sendinblue.Configuration;
@@ -15,15 +16,25 @@ import java.util.List;
 import java.util.Properties;
 
 public class Email {
+    @Getter
     private final SendSmtpEmailSender sender = new SendSmtpEmailSender();
+    @Getter
     private final List<SendSmtpEmailTo> toList = new ArrayList<>();
+    @Getter
     private final List<SendSmtpEmailCc> ccList = new ArrayList<>();
+    @Getter
     private final List<SendSmtpEmailBcc> bccList = new ArrayList<>();
+    @Getter
     private final SendSmtpEmailReplyTo replyTo = new SendSmtpEmailReplyTo();
+    @Getter
     private final List<SendSmtpEmailAttachment> attachmentList = new ArrayList<>();
+    @Getter
     private final Properties headers = new Properties();
+    @Getter
     private final Properties params = new Properties();
+    @Getter
     private String subject;
+    @Getter
     private String htmlContent;
 
     public Email(String myApiKey) {
@@ -100,6 +111,14 @@ public class Email {
     }
 
     public CreateSmtpEmail send() throws ApiException {
+        SendSmtpEmail sendSmtpEmail = getSendSmtpEmail();
+
+        TransactionalEmailsApi api = new TransactionalEmailsApi();
+        CreateSmtpEmail response = api.sendTransacEmail(sendSmtpEmail);
+        return response;
+    }
+
+    SendSmtpEmail getSendSmtpEmail() {
         SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
         sendSmtpEmail.setSender(sender);
         sendSmtpEmail.setTo(toList);
@@ -112,10 +131,7 @@ public class Email {
         sendSmtpEmail.setHeaders(headers);
         sendSmtpEmail.setParams(params);
         sendSmtpEmail.setTemplateId(1L);
-
-        TransactionalEmailsApi api = new TransactionalEmailsApi();
-        CreateSmtpEmail response = api.sendTransacEmail(sendSmtpEmail);
-        return response;
+        return sendSmtpEmail;
     }
 
     public static void main(String[] args) {
